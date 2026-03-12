@@ -1,7 +1,8 @@
 import app from "./app";
+import { envVariables } from "./app/config/env";
 
-const PORT = process.env.PORT || 5000;
 
+const PORT=envVariables.PORT
 const main = () => {
   try {
     app.listen(PORT, () => {

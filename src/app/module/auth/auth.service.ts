@@ -1,5 +1,6 @@
 import { UserStatus } from "../../../generated/prisma/enums";
 import { auth } from "../../lib/auth";
+import { prisma } from "../../lib/prisma";
 
 interface IregirsterPatientData {
   name: string;
@@ -24,9 +25,31 @@ const registerPatient = async (payload: IregirsterPatientData) => {
     throw new Error("Failed to register patient");
   }
 
-  // TODO: add this patiemt to patient table as well after create patient table by using prisma
+  try {
+    const patient = await prisma.$transaction(async (tx) => {
+      const patientTx = await tx.patient.create({
+        data: {
+          userId: data.user.id,
+          name: payload.name,
+          email: payload.email,
+        },
+      });
 
-  return data;
+      return patientTx;
+    });
+
+    return {
+      ...data,
+      patient,
+    };
+  } catch (error) {
+    await prisma.user.delete({
+      where: {
+        id: data.user.id,
+      },
+    });
+    throw error;
+  }
 };
 
 const logInUser = async (payload: IlogInData) => {
@@ -37,20 +60,18 @@ const logInUser = async (payload: IlogInData) => {
     },
   });
 
-
-  if(data.user.isDeleted || data.user.status===UserStatus.DELETED){
-     throw new Error("User is deleted");
+  if (data.user.isDeleted || data.user.status === UserStatus.DELETED) {
+    throw new Error("User is deleted");
   }
 
-    if (data.user.status === UserStatus.BLOCKED) {
-        throw new Error("User is blocked");
-    }
+  if (data.user.status === UserStatus.BLOCKED) {
+    throw new Error("User is blocked");
+  }
 
-    return data
-
+  return data;
 };
 
 export const authService = {
   registerPatient,
-  logInUser
+  logInUser,
 };
