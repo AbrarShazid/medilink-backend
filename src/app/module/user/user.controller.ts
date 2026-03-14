@@ -16,6 +16,7 @@ const createDoctor = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
 export const userController = {
   createDoctor,
 };

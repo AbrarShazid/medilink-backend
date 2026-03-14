@@ -17,7 +17,10 @@ const createDoctor = async (payload: IcreateDoctorPayload) => {
 
     if (!speciality) {
       // throw new Error(`No speciality found with this id ${specialityId}`);
-      throw new AppError( status.NOT_FOUND, `No speciality found with this id ${specialityId}`);
+      throw new AppError(
+        status.NOT_FOUND,
+        `No speciality found with this id ${specialityId}`,
+      );
     }
 
     specialities.push(speciality);
@@ -31,7 +34,10 @@ const createDoctor = async (payload: IcreateDoctorPayload) => {
 
   if (userExists) {
     // throw new Error("User with this email already exists");
-    throw new AppError(status.BAD_REQUEST,"User with this email already exists");
+    throw new AppError(
+      status.BAD_REQUEST,
+      "User with this email already exists",
+    );
   }
 
   const userData = await auth.api.signUpEmail({

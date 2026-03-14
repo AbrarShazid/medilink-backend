@@ -20,12 +20,16 @@ model Doctor {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    specialties  DoctorSpeciality[]
-
     //relations 
 
     userId String @unique
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    specialties     DoctorSpeciality[]
+    appointments    Appointment[]
+    prescriptions   Prescription[]
+    reviews         Review[]
+    doctorSchedules DoctorSchedules[]
 
     @@index([email], name: "idx_doctor_email")
     @@index([isDeleted], name: "idx_doctor_isDeleted")
