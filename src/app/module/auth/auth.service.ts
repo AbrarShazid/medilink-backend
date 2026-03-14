@@ -3,6 +3,7 @@ import { UserStatus } from "../../../generated/prisma/enums";
 import AppError from "../../errorHelpers/AppError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
+import { tokenUtils } from "../../utils/token";
 
 interface IregirsterPatientData {
   name: string;
@@ -40,8 +41,33 @@ const registerPatient = async (payload: IregirsterPatientData) => {
       return patientTx;
     });
 
+
+
+  const accessToken = tokenUtils.getAccessToken({
+    userId: data.user.id,
+    userName: data.user.name,
+    userEmail: data.user.email,
+    userRole: data.user.role,
+    userStatus: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+  const refreshToken = tokenUtils.getRefreshToken({
+    userId: data.user.id,
+    userName: data.user.name,
+    userEmail: data.user.email,
+    userRole: data.user.role,
+    userStatus: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
+
+
     return {
       ...data,
+      accessToken,
+      refreshToken,
       patient,
     };
   } catch (error) {
@@ -63,14 +89,37 @@ const logInUser = async (payload: IlogInData) => {
   });
 
   if (data.user.isDeleted || data.user.status === UserStatus.DELETED) {
-    throw new AppError( status.NOT_FOUND,"User is deleted");
+    throw new AppError(status.NOT_FOUND, "User is deleted");
   }
 
   if (data.user.status === UserStatus.BLOCKED) {
-    throw new AppError(status.FORBIDDEN,"User is blocked");
+    throw new AppError(status.FORBIDDEN, "User is blocked");
   }
 
-  return data;
+  const accessToken = tokenUtils.getAccessToken({
+    userId: data.user.id,
+    userName: data.user.name,
+    userEmail: data.user.email,
+    userRole: data.user.role,
+    userStatus: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+  const refreshToken = tokenUtils.getRefreshToken({
+    userId: data.user.id,
+    userName: data.user.name,
+    userEmail: data.user.email,
+    userRole: data.user.role,
+    userStatus: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
+  return {
+    ...data,
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const authService = {

@@ -40,7 +40,7 @@ export const globalErrorHandler = (
     ((statusCode = status.INTERNAL_SERVER_ERROR), // can skip this
       (message = err.message));
     stack = err.stack;
-      errorSources = [
+    errorSources = [
       {
         path: "",
         message: err.message,
