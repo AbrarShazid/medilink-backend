@@ -1,9 +1,9 @@
 model Admin {
-    id            String    @default(uuid())
+    id            String @id   @default(uuid(7))
     name          String
     email         String    @unique
     profilePhoto  String?
-    contactNumber String?
+    contactNumber String
     isDeleted     Boolean   @default(false)
     deletedAt     DateTime?
     createdAt     DateTime  @default(now())

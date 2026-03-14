@@ -4,18 +4,10 @@ import AppError from "../../errorHelpers/AppError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import { tokenUtils } from "../../utils/token";
+import { ILogInData, IRegirsterPatientData } from "./auth.interface";
 
-interface IregirsterPatientData {
-  name: string;
-  email: string;
-  password: string;
-}
-interface IlogInData {
-  email: string;
-  password: string;
-}
 
-const registerPatient = async (payload: IregirsterPatientData) => {
+const registerPatient = async (payload: IRegirsterPatientData) => {
   const data = await auth.api.signUpEmail({
     body: {
       name: payload.name,
@@ -40,8 +32,6 @@ const registerPatient = async (payload: IregirsterPatientData) => {
 
       return patientTx;
     });
-
-
 
   const accessToken = tokenUtils.getAccessToken({
     userId: data.user.id,
@@ -80,7 +70,7 @@ const registerPatient = async (payload: IregirsterPatientData) => {
   }
 };
 
-const logInUser = async (payload: IlogInData) => {
+const logInUser = async (payload: ILogInData) => {
   const data = await auth.api.signInEmail({
     body: {
       email: payload.email,

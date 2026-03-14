@@ -1,0 +1,9 @@
+export interface IRegirsterPatientData {
+  name: string;
+  email: string;
+  password: string;
+}
+export interface ILogInData {
+  email: string;
+  password: string;
+}
