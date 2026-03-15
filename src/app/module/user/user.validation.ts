@@ -59,21 +59,19 @@ export const createDoctorZodSchema = z.object({
 
 export const createAdminZodSchema = z.object({
   password: z
-    .string({ message: "Password must be a string" })
-    .min(8, { message: "Password minimum length is 8 characters" }),
+    .string("Password must be a string")
+    .min(8, "Password minimum length is 8 characters"),
 
   admin: z.object({
     name: z
-      .string({ message: "Name must be a string" })
-      .min(2, { message: "Name should be at least 2 characters" }),
+      .string("Name must be a string")
+      .min(2, "Name should be at least 2 characters"),
 
-    email: z.email({ message: "Invalid email format" }),
+    email: z.email("Invalid email format"),
     contactNumber: z
-      .string({ message: "Contact number must be a string" })
+      .string("Contact number must be a string")
       .min(11, "Minimum 11"),
-    profilePhoto: z
-      .string({ message: "Profile photo must be a string URL" })
-      .optional(),
+    profilePhoto: z.string("Profile photo must be a string URL").optional(),
   }),
 });
 
