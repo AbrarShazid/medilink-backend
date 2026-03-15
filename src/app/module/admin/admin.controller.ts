@@ -41,10 +41,10 @@ const deleteAdminById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateAdmin = catchAsync(async (req: Request, res: Response) => {
+const updateAdminById = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id as string;
   const payload = req.body;
-  const result = await adminService.updateAdmin(id, payload);
+  const result = await adminService.updateAdminById(id, payload);
 
   sendResponse(res, {
     statusCode: status.OK,
@@ -57,6 +57,6 @@ const updateAdmin = catchAsync(async (req: Request, res: Response) => {
 export const adminController = {
   getAllAdmin,
   getAdminById,
-  updateAdmin,
+  updateAdminById,
   deleteAdminById,
 };

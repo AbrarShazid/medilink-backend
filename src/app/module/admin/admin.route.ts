@@ -22,7 +22,7 @@ router.patch(
   "/:id",
   checkAuth(Role.SUPER_ADMIN),
   validateRequest(validateAdminUpdatePayload),
-  adminController.updateAdmin,
+  adminController.updateAdminById,
 );
 
 router.delete(
@@ -32,4 +32,3 @@ router.delete(
 );
 
 export const adminRoutes = router;
-

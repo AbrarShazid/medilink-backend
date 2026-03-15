@@ -34,12 +34,31 @@ const getAdminById = async (adminId: string) => {
   return admin;
 };
 
-const updateAdmin = async (
+const updateAdminById = async (
   adminId: string,
   updatePayload: IUpdateAdminPayload,
 ) => {
+  const existAdmin = await prisma.admin.findUnique({
+    where: {
+      id: adminId,
+    },
+  });
 
-    
+  if (!existAdmin) {
+    throw new AppError(status.NOT_FOUND, "Admin not found");
+  }
+
+  const { admin } = updatePayload;
+
+  const updatedAdmin = await prisma.admin.update({
+    where: {
+      id: adminId,
+    },
+    data: {
+      ...admin,
+    },
+  });
+  return updatedAdmin;
 };
 
 const deleteAdminById = async (adminId: string, user: IRequestUser) => {
@@ -100,6 +119,6 @@ const deleteAdminById = async (adminId: string, user: IRequestUser) => {
 export const adminService = {
   getAllAdmin,
   getAdminById,
-  updateAdmin,
+  updateAdminById,
   deleteAdminById,
 };
