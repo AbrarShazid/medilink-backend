@@ -17,7 +17,10 @@ export const checkAuth =
       );
 
       if (!sessionToken) {
-        throw new AppError(status.UNAUTHORIZED, "No session found!");
+        throw new AppError(
+          status.UNAUTHORIZED,
+          "Unauthorized access! No session token provided.",
+        );
       }
       if (sessionToken) {
         const sessionExist = await prisma.session.findFirst({
@@ -68,6 +71,11 @@ export const checkAuth =
           if (authRoles.length > 0 && !authRoles.includes(user.role)) {
             throw new AppError(status.UNAUTHORIZED, "User is unauthorized !");
           }
+          req.user = {
+            userId: user.id,
+            role: user.role,
+            email: user.email,
+          };
         }
       }
 
