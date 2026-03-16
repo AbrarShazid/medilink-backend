@@ -24,7 +24,7 @@ model DoctorSpeciality {
     speciality Speciality @relation(fields: [specialityId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
 
-    @@unique([doctorId,specialityId])
+    @@unique([doctorId,specialityId])//composite key
 
     @@index([doctorId],name:"idx_doctor_specialty_doctorId")
     @@index([specialityId],name:"idx_doctor_specialty_specialityId")

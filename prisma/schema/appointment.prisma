@@ -9,15 +9,13 @@ model Appointment {
     patientId      String
     patient        Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-    doctorId         String
+    doctorId String
 
-    doctor Doctor @relation(fields: [doctorId],references: [id],onDelete: Cascade,onUpdate: Cascade)
+    doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-
-
-   scheduleId String 
-   schedule Schedule @relation(fields: [scheduleId],references: [id],onDelete: Cascade,onUpdate: Cascade)
-  prescription Prescription?
+    scheduleId   String
+    schedule     Schedule      @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    prescription Prescription?
     review       Review?
     payment      Payment?
 

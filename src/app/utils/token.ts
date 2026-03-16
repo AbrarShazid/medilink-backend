@@ -27,7 +27,7 @@ const setAccessTokenCookie = (res: Response, token: string) => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    maxAge: 1000 * 60 * 60 * 24, //1day
+    maxAge: 60 * 60 * 24 * 1000, //1day
   });
 };
 
@@ -36,7 +36,7 @@ const setRefreshTokenCookie = (res: Response, token: string) => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    maxAge: 1000 * 60 * 60 * 24 * 7, //7day
+    maxAge: 60 * 60 * 24 * 7 * 1000, //7day
     path: "/",
   });
 };
@@ -46,7 +46,7 @@ const setBetterAuthSessionCookie = (res: Response, token: string) => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    maxAge: 1000 * 60 * 60 * 24, //1 day
+    maxAge: 60 * 60 * 24 * 1000, //1 day
     path: "/",
   });
 };
