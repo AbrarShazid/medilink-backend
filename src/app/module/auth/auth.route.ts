@@ -36,4 +36,11 @@ router.post(
   authController.changePassword,
 );
 
+
+router.post(
+  "/log-out",
+  checkAuth(Role.ADMIN, Role.PATIENT, Role.DOCTOR, Role.SUPER_ADMIN),
+  authController.logOutUser,
+);
+
 export const authRoutes = router;

@@ -274,10 +274,23 @@ const changePassword = async (
   };
 };
 
+//log out user
+
+const logOutUser = async (session_token: string) => {
+  const result = await auth.api.signOut({
+    headers: new Headers({
+      Authorization: `Bearer ${session_token}`,
+    }),
+  });
+
+  return result;
+};
+
 export const authService = {
   registerPatient,
   logInUser,
   getMe,
   getNewToken,
   changePassword,
+  logOutUser,
 };

@@ -113,10 +113,30 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//log out user
+
+const logOutUser = catchAsync(async (req: Request, res: Response) => {
+  const session_token = req.cookies["better-auth.session_token"];
+
+  const result = await authService.logOutUser(session_token);
+
+  tokenUtils.clearAccessTokenCookie(res);
+  tokenUtils.clearRefreshTokenCookie(res);
+  tokenUtils.clearBetterAuthSessionCookie(res);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Log out successful",
+    data: result,
+  });
+});
+
 export const authController = {
   registerPatient,
   logInUser,
   getMe,
   getNewToken,
   changePassword,
+  logOutUser,
 };

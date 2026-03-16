@@ -51,10 +51,39 @@ const setBetterAuthSessionCookie = (res: Response, token: string) => {
   });
 };
 
+//for clear cookie
+
+const clearAccessTokenCookie = (res: Response) => {
+  cookieUtils.clearCookie(res, "accessToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+};
+
+const clearRefreshTokenCookie = (res: Response) => {
+  cookieUtils.clearCookie(res, "refreshToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+};
+
+const clearBetterAuthSessionCookie = (res: Response) => {
+  cookieUtils.clearCookie(res, "better-auth.session_token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+};
+
 export const tokenUtils = {
   getAccessToken,
   getRefreshToken,
   setAccessTokenCookie,
   setRefreshTokenCookie,
   setBetterAuthSessionCookie,
+  clearAccessTokenCookie,
+  clearRefreshTokenCookie,
+  clearBetterAuthSessionCookie,
 };
