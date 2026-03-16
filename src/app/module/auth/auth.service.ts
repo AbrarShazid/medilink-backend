@@ -222,12 +222,62 @@ const getNewToken = async (refreshToken: string, session_token: string) => {
 };
 
 //change password
+const changePassword = async (
+  payload: IChangePasswordPayload,
+  session_token: string,
+) => {
+  const session = await auth.api.getSession({
+    headers: new Headers({
+      Authorization: `Bearer ${session_token}`,
+    }),
+  });
 
+  if (!session) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid Session!");
+  }
+
+  const { currentPassword, newPassword } = payload;
+  const result = await auth.api.changePassword({
+    body: {
+      newPassword: newPassword,
+      currentPassword: currentPassword,
+      revokeOtherSessions: true,
+    },
+    headers: new Headers({
+      Authorization: `Bearer ${session_token}`,
+    }),
+  });
+
+  const accessToken = tokenUtils.getAccessToken({
+    userId: result.user.id,
+    userName: result.user.name,
+    userEmail: result.user.email,
+    userRole: result.user.role,
+    userStatus: result.user.status,
+    isDeleted: result.user.isDeleted,
+    emailVerified: result.user.emailVerified,
+  });
+  const refreshToken = tokenUtils.getRefreshToken({
+    userId: result.user.id,
+    userName: result.user.name,
+    userEmail: result.user.email,
+    userRole: result.user.role,
+    userStatus: result.user.status,
+    isDeleted: result.user.isDeleted,
+    emailVerified: result.user.emailVerified,
+  });
+
+  return {
+    ...result,
+    accessToken,
+    refreshToken,
+  };
+};
 
 export const authService = {
   registerPatient,
   logInUser,
   getMe,
   getNewToken,
-  
+  changePassword,
 };

@@ -16,3 +16,12 @@ export const logInZodSchema = z.object({
     .string("Password must be a string")
     .min(8, "Password minimum length is 8 characters"),
 });
+
+export const changePasswordSchema = z.object({
+  currentPassword: z
+    .string("Password must be a string")
+    .min(8, "Password minimum length is 8 characters"),
+  newPassword: z
+    .string("Password must be a string")
+    .min(8, "Password minimum length is 8 characters"),
+});

@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { authController } from "./auth.controller";
 import { validateRequest } from "../../middleware/validateRequest";
-import { logInZodSchema, registerPatientZodSchema } from "./auth.validation";
+import {
+  changePasswordSchema,
+  logInZodSchema,
+  registerPatientZodSchema,
+} from "./auth.validation";
 import { checkAuth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma/enums";
 
@@ -25,5 +29,11 @@ router.get(
 );
 
 router.post("/refresh-token", authController.getNewToken);
+router.post(
+  "/change-password",
+  checkAuth(Role.ADMIN, Role.PATIENT, Role.DOCTOR, Role.SUPER_ADMIN),
+  validateRequest(changePasswordSchema),
+  authController.changePassword,
+);
 
 export const authRoutes = router;
