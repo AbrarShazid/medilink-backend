@@ -348,19 +348,19 @@ const resetPassword = async (
   otp: string,
   newPassword: string,
 ) => {
-  const user = await prisma.user.findUnique({
+  const userExist = await prisma.user.findUnique({
     where: {
       email,
     },
   });
-  if (!user) {
+  if (!userExist) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
-  if (user.emailVerified === false) {
+  if (userExist.emailVerified === false) {
     throw new AppError(status.BAD_REQUEST, "Email not verified");
   }
 
-  if (user.status === UserStatus.DELETED || user.isDeleted) {
+  if (userExist.status === UserStatus.DELETED || userExist.isDeleted) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
 
@@ -372,11 +372,23 @@ const resetPassword = async (
     },
   });
 
+  if (userExist.needPasswordChange === true) {
+    // First-time password reset for doctor/admin; handle lost email case
+    await prisma.user.update({
+      where: {
+        id: userExist.id,
+      },
+      data: {
+        needPasswordChange: false,
+      },
+    });
+  }
+
   //after successful reset password log out from other device
 
   await prisma.session.deleteMany({
     where: {
-      userId: user.id,
+      userId: userExist.id,
     },
   });
 };
