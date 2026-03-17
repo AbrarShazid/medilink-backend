@@ -307,6 +307,68 @@ const verifyEmail = async (email: string, otp: string) => {
   }
 };
 
+const forgetPassword = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!user) {
+    throw new AppError(status.NOT_FOUND, "User not found");
+  }
+  if (user.emailVerified === false) {
+    throw new AppError(status.BAD_REQUEST, "Email not verified");
+  }
+
+  if (user.status === UserStatus.DELETED || user.isDeleted) {
+    throw new AppError(status.NOT_FOUND, "User not found");
+  }
+
+  await auth.api.requestPasswordResetEmailOTP({
+    body: {
+      email,
+    },
+  });
+};
+
+const resetPassword = async (
+  email: string,
+  otp: string,
+  newPassword: string,
+) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!user) {
+    throw new AppError(status.NOT_FOUND, "User not found");
+  }
+  if (user.emailVerified === false) {
+    throw new AppError(status.BAD_REQUEST, "Email not verified");
+  }
+
+  if (user.status === UserStatus.DELETED || user.isDeleted) {
+    throw new AppError(status.NOT_FOUND, "User not found");
+  }
+
+  await auth.api.resetPasswordEmailOTP({
+    body: {
+      email,
+      otp,
+      password: newPassword,
+    },
+  });
+
+  //after successful reset password log out from other device
+
+  await prisma.session.deleteMany({
+    where: {
+      userId: user.id,
+    },
+  });
+};
+
 export const authService = {
   registerPatient,
   logInUser,
@@ -315,4 +377,6 @@ export const authService = {
   changePassword,
   logOutUser,
   verifyEmail,
+  forgetPassword,
+  resetPassword,
 };
