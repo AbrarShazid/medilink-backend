@@ -102,8 +102,8 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
   const { accessToken, refreshToken, token } = result;
 
   tokenUtils.setAccessTokenCookie(res, accessToken);
-  (tokenUtils.setRefreshTokenCookie(res, refreshToken),
-    tokenUtils.setBetterAuthSessionCookie(res, token as string));
+  tokenUtils.setRefreshTokenCookie(res, refreshToken);
+  tokenUtils.setBetterAuthSessionCookie(res, token as string);
 
   sendResponse(res, {
     statusCode: status.OK,
@@ -132,6 +132,17 @@ const logOutUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const verifyEmail = catchAsync(async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
+  await authService.verifyEmail(email, otp);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Verification of email complete!",
+  });
+});
+
 export const authController = {
   registerPatient,
   logInUser,
@@ -139,4 +150,5 @@ export const authController = {
   getNewToken,
   changePassword,
   logOutUser,
+  verifyEmail,
 };

@@ -7,14 +7,14 @@ import { tokenUtils } from "../../utils/token";
 import {
   IChangePasswordPayload,
   ILogInData,
-  IRegirsterPatientData,
+  IRegisterPatientData,
 } from "./auth.interface";
 import { IRequestUser } from "../../interfaces/requestUser.interface";
 import { jwtUtils } from "../../utils/jwt";
 import { envVariables } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
 // register
-const registerPatient = async (payload: IRegirsterPatientData) => {
+const registerPatient = async (payload: IRegisterPatientData) => {
   const data = await auth.api.signUpEmail({
     body: {
       name: payload.name,
@@ -74,6 +74,7 @@ const registerPatient = async (payload: IRegirsterPatientData) => {
     throw error;
   }
 };
+
 //log in user
 const logInUser = async (payload: ILogInData) => {
   const data = await auth.api.signInEmail({
@@ -286,6 +287,26 @@ const logOutUser = async (session_token: string) => {
   return result;
 };
 
+const verifyEmail = async (email: string, otp: string) => {
+  const result = await auth.api.verifyEmailOTP({
+    body: {
+      email,
+      otp,
+    },
+  });
+
+  if (result.status === true && !result.user.emailVerified) {
+    await prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        emailVerified: true,
+      },
+    });
+  }
+};
+
 export const authService = {
   registerPatient,
   logInUser,
@@ -293,4 +314,5 @@ export const authService = {
   getNewToken,
   changePassword,
   logOutUser,
+  verifyEmail,
 };
