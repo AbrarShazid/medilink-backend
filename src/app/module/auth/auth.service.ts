@@ -249,6 +249,18 @@ const changePassword = async (
     }),
   });
 
+  if (session.user.needPasswordChange === true) {
+    //only force the password change for  first time when doctor , admin ,super admin log in after that update needPasswordChange to false
+    await prisma.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        needPasswordChange: false,
+      },
+    });
+  }
+
   const accessToken = tokenUtils.getAccessToken({
     userId: result.user.id,
     userName: result.user.name,
