@@ -237,6 +237,25 @@ const changePassword = async (
     throw new AppError(status.UNAUTHORIZED, "Invalid Session!");
   }
 
+  const userId = session.session.userId;
+
+  const account = await prisma.account.findFirst({
+    where: {
+      userId: userId,
+    },
+  });
+
+  if (!account) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid!");
+  }
+
+  if (account.providerId === "google") {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Can't change password, logged in with Google!",
+    );
+  }
+
   const { currentPassword, newPassword } = payload;
   const result = await auth.api.changePassword({
     body: {
@@ -300,6 +319,35 @@ const logOutUser = async (session_token: string) => {
 };
 
 const verifyEmail = async (email: string, otp: string) => {
+  const findUser = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  if (!findUser) {
+    throw new AppError(status.UNAUTHORIZED, "No user Fount!");
+  }
+
+  const userId = findUser.id;
+
+  const providerId = await prisma.account.findFirst({
+    where: {
+      userId: userId,
+    },
+  });
+
+  if (!providerId) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid!");
+  }
+
+  if (providerId.providerId === "google") {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Email is already verified as you logged in with google!",
+    );
+  }
+
   const result = await auth.api.verifyEmailOTP({
     body: {
       email,
@@ -328,6 +376,26 @@ const forgetPassword = async (email: string) => {
   if (!user) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
+
+  const userId = user.id;
+
+  const providerId = await prisma.account.findFirst({
+    where: {
+      userId: userId,
+    },
+  });
+
+  if (!providerId) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid!");
+  }
+
+  if (providerId.providerId === "google") {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Cann't use forget password as this email used in continue with google!",
+    );
+  }
+
   if (user.emailVerified === false) {
     throw new AppError(status.BAD_REQUEST, "Email not verified");
   }
@@ -356,6 +424,26 @@ const resetPassword = async (
   if (!userExist) {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
+
+  const userId = userExist.id;
+
+  const providerId = await prisma.account.findFirst({
+    where: {
+      userId: userId,
+    },
+  });
+
+  if (!providerId) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid!");
+  }
+
+  if (providerId.providerId === "google") {
+    throw new AppError(
+      status.UNAUTHORIZED,
+      "Cann't reset password as this email used in continue with google!",
+    );
+  }
+
   if (userExist.emailVerified === false) {
     throw new AppError(status.BAD_REQUEST, "Email not verified");
   }
