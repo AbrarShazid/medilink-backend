@@ -4,6 +4,7 @@ import { prisma } from "./prisma";
 import { Role, UserStatus } from "../../generated/prisma/enums";
 import { bearer, emailOTP } from "better-auth/plugins";
 import { sendEmail } from "../utils/email";
+import { envVariables } from "../config/env";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -13,6 +14,26 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
   },
+
+  socialProviders: {
+    google: {
+      clientId: envVariables.GOOGLE_CLIENT_ID,
+      clientSecret: envVariables.GOOGLE_CLIENT_SECRET,
+      mapProfileToUser: () => {
+        return {
+          role: Role.PATIENT, //google signup only for patient
+          status: UserStatus.ACTIVE,
+          needPasswordChange: false,
+          isDeleted: false,
+          deletedAt: null,
+        };
+      },
+    },
+  },
+
+  // redirectURLs:{
+  //   signIn:""
+  // },
 
   emailVerification: {
     sendOnSignUp: true,
@@ -76,27 +97,23 @@ export const auth = betterAuth({
               },
             });
           }
-        }
+        } else if ((type = "forget-password")) {
+          const user = await prisma.user.findUnique({
+            where: {
+              email,
+            },
+          });
 
-
-        else if(type="forget-password"){
-          const user =await prisma.user.findUnique({
-            where:{
-              email
-            }
-          })
-
-          if(user){
+          if (user) {
             sendEmail({
-              to:email,
-              subject:"Password reset OTP"
-              ,
-              templateName:"otp",
-              templateData:{
-                name:user.name,
-                otp
-              }
-            })
+              to: email,
+              subject: "Password reset OTP",
+              templateName: "otp",
+              templateData: {
+                name: user.name,
+                otp,
+              },
+            });
           }
         }
       },
@@ -111,6 +128,35 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 60 * 60 * 24, //1day
+    },
+  },
+
+  redirectURLs: {
+    signIn: `${envVariables.BETTER_AUTH_URL}/api/v1/auth/google/success`,
+  },
+
+  trustedOrigins: [envVariables.BETTER_AUTH_URL, envVariables.FRONTEND_URL],
+
+  advanced: {
+    useSecureCookies: false,
+    cookies: {
+      state: {
+        attributes: {
+          sameSite: "none",
+          secure: true,
+          httpOnly: true,
+          path: "/",
+        },
+      },
+
+      sessionToken: {
+        attributes: {
+          sameSite: "none",
+          secure: true,
+          httpOnly: true,
+          path: "/",
+        },
+      },
     },
   },
 });
