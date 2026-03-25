@@ -97,7 +97,7 @@ export const checkAuth =
         );
       }
 
-      console.log("token data", verifiedToken);
+      // console.log("token data", verifiedToken);
 
       if (
         authRoles.length > 0 &&
